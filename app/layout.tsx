@@ -1,24 +1,26 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
 import { Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-// Konfiguracja fontu Montserrat dla całej strony
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-montserrat", // Nazwa zmiennej CSS
+const montserrat = Montserrat({ 
+  subsets: ["latin", "latin-ext"],
+  variable: '--font-montserrat' 
 });
 
-// Konfiguracja fontu Playfair Display dla nagłówków
 const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-playfair", // Nazwa zmiennej CSS
+  subsets: ["latin", "latin-ext"],
+  variable: '--font-playfair'
 });
 
 export const metadata: Metadata = {
-  title: "Formularz Wyceny",
-  description: "Wypełnij formularz, aby otrzymać darmową wycenę",
+  title: "Ogrody Zimowe - Wycena | Verandana",
+  description: "Wypełnij formularz i otrzymaj bezpłatną, profesjonalną wycenę swojego wymarzonego ogrodu zimowego lub pergoli w ciągu 24h.",
+  openGraph: {
+    title: "Ogrody Zimowe - Wycena | Verandana",
+    description: "Profesjonalna wycena w 24h. Nowoczesne ogrody zimowe, pergole i zadaszenia tarasów.",
+  },
 };
 
 export default function RootLayout({
@@ -28,10 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl">
-      {/* Łączymy zmienne z fontami i przypisujemy do body */}
-      <body className={`${montserrat.variable} ${playfair.variable}`}>
-        {children}
-      </body>
+      <body className={`${montserrat.variable} ${playfair.variable}`}>{children}</body>
     </html>
   );
 }

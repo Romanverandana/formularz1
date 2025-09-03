@@ -1,90 +1,98 @@
-/* Usunięto .typeSelectorWrapper - nie jest już potrzebny */
+/* components/TypeSelector.module.css */
 
-.typeSelector {
+.container {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* KLUCZOWA ZMIANA: Zawsze 5 równych kolumn */
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+  width: 100%;
 }
 
-.tileOption {
-  position: relative;
-  cursor: pointer;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.2s ease-in-out;
-  border: 1px solid var(--brand-border);
-  background: #fdfdfe;
+.tile {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: #ffffff;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* Optymalizacja dla GPU */
+  will-change: transform, box-shadow;
+  /* Usunięcie domyślnego focusa, bo mamy własny */
+  outline: none; 
 }
 
-.tileOption:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(90, 110, 130, 0.1);
-  border-color: var(--accent-focus);
+/* Własny, widoczny styl dla focusa (nawigacja klawiaturą) */
+.tile:focus-visible {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
 }
 
-.tileOption.selected {
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 3px rgba(61, 90, 128, 0.2);
+.tile:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07), 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-color: #a5b4fc; 
 }
 
-.tileImage {
+.tile.selected {
+  border-color: #6366f1; 
+  background-color: #f7f7fe;
+}
+
+/* KRYTYCZNA POPRAWKA: Kontener obrazka musi być `relative` */
+.imageContainer {
+  position: relative;
   width: 100%;
-  height: 110px;
-  object-fit: cover;
-  display: block;
+  aspect-ratio: 16 / 10; /* Lepsze proporcje dla wizualizacji */
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
-.tileContent {
-  padding: 0.8rem;
-  text-align: left;
-  flex-grow: 1; /* Wyrównuje wysokość kafelków, jeśli opisy mają różną długość */
-}
-
-.tileTitle {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--brand-title);
-  margin: 0 0 0.25rem 0;
-}
-
-.tileDesc {
-  font-size: 0.8rem;
-  color: var(--brand-text);
-  line-height: 1.4;
-  margin: 0;
-}
-
-.tileCheckmark {
+/* KRYTYCZNA POPRAWKA: Obrazki jako absolutne warstwy */
+.image, .imageOverlay {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  background: var(--brand-primary);
-  border-radius: 50%;
+  inset: 0; /* Rozciąga na cały kontener (top:0, right:0, bottom:0, left:0) */
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font-montserrat);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+  min-height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.2s ease-in-out;
+  text-align: center;
 }
 
-.tileOption.selected .tileCheckmark {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.mainError {
+.errorText {
+  color: #ef4444;
+  font-size: 0.9375rem;
+  margin-top: 1.5rem;
   display: block;
-  text-align: left;
-  color: var(--error-main);
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  width: 100%;
+  text-align: center;
 }
