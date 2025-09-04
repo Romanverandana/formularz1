@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint",
-    "prepare": "husky",
-    "test": "echo \"(no tests)\" && exit 0"
+    "lint": "eslint"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -18,7 +16,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
     "ioredis": "^5.7.0",
-    "neo4j-driver": "^5.28.1",
+    "neo4j-driver": "^5.22.0",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-day-picker": "^9.9.0",
@@ -36,6 +34,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
+    "husky": "^9.0.11",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
