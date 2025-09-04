@@ -5,22 +5,49 @@ import styles from './TypeSelector.module.css';
 import clsx from 'clsx';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-// ***** TUTAJ JEST JEDYNA POPRAWKA *****
-// Dodajemy słowo "export", aby ten interfejs był widoczny w innych plikach.
-export interface Tile { value: string; title: string; desc: string; src: string; alt: string; srcNight?: string; altNight?: string; }
-interface TypeSelectorProps { tiles: Tile[]; selectedValue: string; onSelect: (value: string) => void; error?: string; }
+export interface Tile { 
+  value: string; 
+  title: string; 
+  desc: string; 
+  src: string; 
+  alt: string; 
+  srcNight?: string; 
+  altNight?: string; 
+}
+
+interface TypeSelectorProps { 
+  tiles: Tile[]; 
+  selectedValue: string; 
+  onSelect: (value: string) => void; 
+  error?: string; 
+}
 
 const EASE_ORGANIC = [0.22, 1, 0.36, 1] as const;
-const dayBreathing = {
+
+// ***** POCZĄTEK POPRAWKI *****
+// Rozdzielamy definicję animacji na dwie części
+
+// 1. Właściwości, które animujemy
+const dayBreathingAnimation = {
   scale: [1, 1.02, 1],
   filter: ['brightness(1) saturate(1)', 'brightness(1.05) saturate(1.1)', 'brightness(1) saturate(1)'],
-  transition: { duration: 5.4, ease: EASE_ORGANIC, repeat: Infinity, repeatType: 'reverse' },
 };
+
+// 2. Ustawienia, JAK animujemy
+const dayBreathingTransition = {
+  duration: 5.4,
+  ease: EASE_ORGANIC,
+  repeat: Infinity,
+  repeatType: 'reverse' as const, // Dodajemy 'as const' dla pewności typów
+};
+
 const nightBreathing = {
   scale: [2, 2.05, 2],
   filter: ['brightness(1) saturate(1)', 'brightness(1.15) saturate(1.2)', 'brightness(1) saturate(1)'],
-  transition: { duration: 4.6, ease: EASE_ORGANIC, repeat: Infinity, repeatType: 'reverse' },
+  transition: { duration: 4.6, ease: EASE_ORGANIC, repeat: Infinity, repeatType: 'reverse' as const },
 };
+// ***** KONIEC POPRAWKI *****
+
 
 export default function TypeSelector({ tiles, selectedValue, onSelect, error }: TypeSelectorProps) {
   const [hoveredTile, setHoveredTile] = useState<string | null>(null);
@@ -57,6 +84,7 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
     el.style.setProperty('--ry', `${ry}deg`);
     el.style.setProperty('--tz', '12px');
   };
+  
   const onTileMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget;
     el.style.setProperty('--rx', '0deg');
@@ -67,7 +95,7 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
   return (
     <div>
       <motion.section 
-        className={clsx(styles.container, tiles.length === 5 && styles.containerFiveCols)}
+        className={clsx(styles.container, tiles.length === 5 && styles.containerFiveCols)} 
         role="radiogroup" 
         aria-label="Wybierz typ konstrukcji"
         onKeyDown={onGroupKeyDown}
@@ -97,7 +125,14 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
               variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: EASE_ORGANIC } } }}
             >
               <div className={styles.imageContainer}>
-                <motion.div className={styles.image} initial={{ opacity: 1 }} animate={!prefersReducedMotion ? { opacity: 1, ...dayBreathing } : { opacity: 1 }}>
+                {/* ***** POCZĄTEK POPRAWKI ***** */}
+                <motion.div 
+                  className={styles.image} 
+                  initial={{ opacity: 1 }} 
+                  animate={!prefersReducedMotion ? dayBreathingAnimation : {}}
+                  transition={!prefersReducedMotion ? dayBreathingTransition : {}}
+                >
+                {/* ***** KONIEC POPRAWKI ***** */}
                   <Image src={tile.src} alt={tile.alt} fill sizes="(max-width: 768px) 100vw, 33vw" priority={index < 3} style={{ objectFit: 'cover' }}/>
                 </motion.div>
                 {tile.srcNight && (
@@ -145,7 +180,11 @@ function Typewriter({ text, speed = 0.015 }: { text: string; speed?: number; }) 
   const child = { hidden: { opacity: 0, y: 5 }, visible: { opacity: 1, y: 0 } };
   return (
     <motion.span style={{ display: 'inline-block' }} variants={container} initial="hidden" animate="visible">
-      {chars.map((c, i) => ( <motion.span key={i} variants={child}>{c}</motion.span> ))}
+      {chars.map((c, i) => (
+        <motion.span key={i} variants={child}>
+          {c}
+        </motion.span>
+      ))}
     </motion.span>
   );
 }
