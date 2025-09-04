@@ -1,0 +1,48 @@
+.calField { 
+  position: relative; 
+  display: grid; 
+  gap: 8px; 
+}
+.calLabel { 
+  font-size: 0.9375rem; 
+  color: #374151; 
+  font-weight: 500;
+  font-family: var(--font-montserrat);
+}
+.calInput {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; padding: 0.875rem 1.125rem; height: 52px;
+  border-radius: 8px; border: 1px solid #E5E7EB;
+  background: #fff; font-weight: 500; font-size: 1rem; font-family: var(--font-montserrat); color: #111827; 
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  transition: box-shadow .2s ease, transform .06s ease, border-color .2s ease;
+  cursor: pointer;
+}
+.calInput:hover { 
+  box-shadow: 0 6px 20px rgba(0,0,0,.08); 
+  border-color: #d1d5db; 
+}
+.calInput:active { 
+  transform: scale(.99); 
+}
+.calPlaceholder { 
+  color: #9ca3af; 
+  font-weight: 400; 
+}
+.calPopover {
+  position: absolute; z-index: 70; top: calc(100% + 10px); left: 0;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.18), 0 8px 24px rgba(0,0,0,.08);
+  padding: 1rem; overflow: hidden;
+}
+
+/* ZMIANA: Nowe, pomarańczowe kolory akcentów */
+.calPopover :global(.rdp-day_today) {
+  font-weight: bold;
+  color: #fd9155;
+  border: 1px solid #fd9155;
+}
+.calPopover :global(.rdp-day_selected) {
+  background-color: #fd9155 !important;
+  color: #fff !important;
+}

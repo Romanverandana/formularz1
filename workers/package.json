@@ -1,0 +1,23 @@
+{
+  "name": "verandana-workers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/ingest.ts"
+  },
+  "dependencies": {
+    "bullmq": "latest",
+    "dotenv": "latest",
+    "ioredis": "latest",
+    "neo4j-driver": "latest",
+    "zod": "latest",
+    "uuid": "latest",
+    "libphonenumber-js": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}

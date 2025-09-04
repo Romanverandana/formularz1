@@ -1,11 +1,10 @@
-// components/FileUploader.tsx
 'use client';
 
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import type { FileWithProgress } from '../app/page';
+import { FileWithProgress } from '@/app/page'; // Zakładając, że ten typ jest eksportowany z page.tsx
 import styles from './FileUploader.module.css';
 
-// --- Helper Functions and Icons ---
+// --- Funkcje pomocnicze i ikony ---
 function uid() {
   return Math.random().toString(36).slice(2);
 }
@@ -27,34 +26,17 @@ type Props = {
   accept?: string;
   multiple?: boolean;
   maxSizeMB?: number;
-  title?: string;
-  note?: string;
-  buttonLabel?: string;
 };
 
 export default function FileUploader({
   files,
   onFilesChange,
-  accept = "image/jpeg, image/png, image/webp, image/heic, image/heif, application/pdf", // Dodano HEIC/HEIF
+  accept = "image/jpeg, image/png, image/webp, image/heic, image/heif, application/pdf",
   multiple = true,
   maxSizeMB = 5,
-  title = "Przeciągnij pliki tutaj lub kliknij, aby wybrać", // Zmieniony domyślny tytuł
-  note,
-  buttonLabel = "Wybierz pliki",
 }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragging, setDragging] = useState(false);
-
-  const acceptLabel = useMemo(() => {
-    const parts = [];
-    if (accept.includes("image/jpeg") || accept.includes("image/png") || accept.includes("image/webp") || accept.includes("image/heic")) {
-      parts.push("obrazy (JPG/PNG/WebP/HEIC)"); // Zaktualizowano opis
-    }
-    if (accept.includes("application/pdf")) {
-      parts.push("PDF");
-    }
-    return parts.length > 0 ? parts.join(" i ") : "pliki";
-  }, [accept]);
 
   const addFiles = useCallback((fileList: FileList | null) => {
     if (!fileList) return;
@@ -96,14 +78,10 @@ export default function FileUploader({
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
       >
         <input ref={inputRef} type="file" className={styles.hiddenInput} accept={accept} multiple={multiple} onChange={(e) => addFiles(e.target.files)} />
-        <div className={styles.iconWrap} aria-hidden="true">{PaperclipIcon}</div>
+        <div className={styles.iconWrap}>{PaperclipIcon}</div>
         <div className={styles.copy}>
-          <div className={styles.title}>{title}</div>
-          <div className={styles.meta}>Obsługiwane: <b>{acceptLabel}</b> · Limit: <b>{maxSizeMB} MB</b> / plik{note && ` · ${note}`}</div>
-          <div className={styles.actions}>
-            <button type="button" className={styles.btn} onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}>{buttonLabel}</button>
-            <span className={styles.hint}>lub upuść tutaj</span>
-          </div>
+          <div className={styles.title}>Przeciągnij pliki tutaj lub kliknij</div>
+          <div className={styles.meta}>Obsługiwane: <b>JPG, PNG, PDF</b> · Limit: <b>{maxSizeMB} MB</b> / plik</div>
         </div>
       </div>
 
@@ -116,17 +94,15 @@ export default function FileUploader({
           <ul className={styles.fileList}>
             {files.map(f => (
               <li key={f.id} className={`${styles.fileItem} ${f.error ? styles.isError : ""}`}>
-                <div className={styles.thumb}>{f.preview ? <img src={f.preview} alt={f.file.name} /> : <div className={styles.thumbIcon} aria-hidden="true">{DocIcon}</div>}</div>
+                <div className={styles.thumb}>{f.preview ? <img src={f.preview} alt={f.file.name} /> : <div className={styles.thumbIcon}>{DocIcon}</div>}</div>
                 <div className={styles.fileInfo}>
                   <div className={styles.fileName} title={f.file.name}>{f.file.name}</div>
                   <div className={styles.fileMeta}>{formatSize(f.file.size)}</div>
                   {f.error ? <div className={styles.errorText}>{f.error}</div> : <div className={styles.progress}><div className={styles.bar} style={{ width: `${f.progress}%` }} /></div>}
                 </div>
-                <div className={styles.fileActions}>
-                  <button type="button" className={styles.removeBtn} onClick={() => removeFile(f.id)} aria-label={`Usuń ${f.file.name}`}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                  </button>
-                </div>
+                <button type="button" className={styles.removeBtn} onClick={() => removeFile(f.id)} aria-label={`Usuń ${f.file.name}`}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
               </li>
             ))}
           </ul>

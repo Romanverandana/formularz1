@@ -1,98 +1,102 @@
-/* components/TypeSelector.module.css */
-
+/* /components/TypeSelector.module.css */
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.75rem;
-  width: 100%;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  justify-items: center;
+  align-items: start;
+  perspective: 1200px;
 }
-
+.container > *:last-child:nth-child(3n-1) {
+  grid-column: 2;
+}
 .tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 1.5rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  cursor: pointer;
-  background-color: #ffffff;
-  overflow: hidden;
+  width: 100%;
+  max-width: 340px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  outline: none;
+  contain-intrinsic-size: 360px 420px;
+  content-visibility: auto;
+  transform-style: preserve-3d;
+  transform: perspective(1200px)
+             rotateX(var(--rx, 0deg))
+             rotateY(var(--ry, 0deg))
+             translateZ(var(--tz, 0px));
+  transition: transform .1s ease-out, box-shadow .1s ease-out, border-color .2s ease;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  /* Optymalizacja dla GPU */
-  will-change: transform, box-shadow;
-  /* Usunięcie domyślnego focusa, bo mamy własny */
-  outline: none; 
+  z-index: 1;
 }
-
-/* Własny, widoczny styl dla focusa (nawigacja klawiaturą) */
-.tile:focus-visible {
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
-}
-
 .tile:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07), 0 4px 6px rgba(0, 0, 0, 0.05);
-  border-color: #a5b4fc; 
+  border-color: #fdd0b5; /* Jaśniejszy pomarańczowy */
+  will-change: transform, box-shadow;
+  box-shadow: 0 12px 32px rgba(0,0,0,.12), 0 20px 60px rgba(0,0,0,.08);
+  z-index: 10;
 }
-
-.tile.selected {
-  border-color: #6366f1; 
-  background-color: #f7f7fe;
+.tile:focus-visible {
+  outline: none;
+  border-color: #fd9155;
+  box-shadow: 0 0 0 3px rgba(253, 145, 85, 0.4), 0 12px 30px rgba(0,0,0,.1);
 }
-
-/* KRYTYCZNA POPRAWKA: Kontener obrazka musi być `relative` */
+.selected {
+  border-color: #fd9155;
+  box-shadow: 0 0 0 3px rgba(253, 145, 85, 0.3), 0 10px 28px rgba(0,0,0,.08);
+}
 .imageContainer {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10; /* Lepsze proporcje dla wizualizacji */
-  border-radius: 8px;
+  aspect-ratio: 1 / 1;
+  min-height: 220px;
+  border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  transform: translateZ(12px);
 }
-
-/* KRYTYCZNA POPRAWKA: Obrazki jako absolutne warstwy */
-.image, .imageOverlay {
+.image {
   position: absolute;
-  inset: 0; /* Rozciąga na cały kontener (top:0, right:0, bottom:0, left:0) */
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  border-radius: 12px;
+  will-change: transform, opacity, filter;
+}
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  will-change: transform, opacity, filter;
+  z-index: 50;
+  pointer-events: none;
+}
+.content { 
+  margin-top: 12px; 
+  text-align: center; 
+}
+.title, .description {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.title { 
+  font-weight: 700; margin: 0; color: #0f172a; font-size: 1.25rem;
+}
+.description { 
+  min-height: 4.8em; 
+  color: #4b5563; 
+}
+.srOnly {
+  position: absolute !important; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.errorText { 
+  color: #ef4444; 
+  margin-top: 8px; 
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-grow: 1;
-  justify-content: space-between;
-}
-
-.title {
-  font-family: var(--font-montserrat);
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 0.5rem 0;
-}
-
-.description {
-  font-size: 0.95rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.6;
-  min-height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.errorText {
-  color: #ef4444;
-  font-size: 0.9375rem;
-  margin-top: 1.5rem;
-  display: block;
-  width: 100%;
-  text-align: center;
+@media (hover: none) { .tile { transform: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .tile, .image, .imageOverlay {
+    transition: none !important; animation: none !important;
+    box-shadow: none !important; filter: none !important;
+  }
 }
