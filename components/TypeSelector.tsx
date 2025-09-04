@@ -132,7 +132,7 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
             </motion.article>
           );
         })}
-      </section>
+      </motion.section>
       {error && <p className={styles.errorText} role="alert">{error}</p>}
       <p id="ts-help" className={styles.srOnly}>Użyj klawiszy strzałek, Home i End, aby zmienić wybór.</p>
     </div>
