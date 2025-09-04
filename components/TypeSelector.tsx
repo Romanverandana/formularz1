@@ -5,7 +5,9 @@ import styles from './TypeSelector.module.css';
 import clsx from 'clsx';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-interface Tile { value: string; title: string; desc: string; src: string; alt: string; srcNight?: string; altNight?: string; }
+// ***** TUTAJ JEST JEDYNA POPRAWKA *****
+// Dodajemy słowo "export", aby ten interfejs był widoczny w innych plikach.
+export interface Tile { value: string; title: string; desc: string; src: string; alt: string; srcNight?: string; altNight?: string; }
 interface TypeSelectorProps { tiles: Tile[]; selectedValue: string; onSelect: (value: string) => void; error?: string; }
 
 const EASE_ORGANIC = [0.22, 1, 0.36, 1] as const;
@@ -130,7 +132,7 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
             </motion.article>
           );
         })}
-      </motion.section>
+      </section>
       {error && <p className={styles.errorText} role="alert">{error}</p>}
       <p id="ts-help" className={styles.srOnly}>Użyj klawiszy strzałek, Home i End, aby zmienić wybór.</p>
     </div>
