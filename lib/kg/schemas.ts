@@ -1,22 +1,22 @@
 import { z } from "zod";
 
-// Spójny, płaski schemat formularza
+// Płaski schemat formularza – zgodny ze starszym Zod
 export const FormValuesSchema = z.object({
   // Krok 1
-  productId: z
-    .string({ required_error: "Proszę wybrać typ produktu." })
-    .min(1, "Proszę wybrać typ produktu."),
+  productId: z.string().min(1, "Proszę wybrać typ produktu."),
 
   // Krok 2
-  plannedDate: z.date().optional(), // RHF + Controller -> Date | undefined
-  
+  plannedDate: z.date().optional(),
+
   // Krok 3
   name: z.string().min(2, { message: "Imię musi mieć co najmniej 2 znaki." }),
   email: z.string().email({ message: "Proszę podać poprawny adres email." }),
   phone: z.string().optional(),
   postalCode: z.string().min(5, { message: "Kod pocztowy musi mieć 5 znaków." }),
-  consent: z.literal(true, {
-    errorMap: () => ({ message: "Zgoda jest wymagana." }),
+
+  // Zamiast z.literal(true) (które potrafi bruździć w starszych configach):
+  consent: z.boolean().refine((v) => v === true, {
+    message: "Zgoda jest wymagana.",
   }),
 });
 
