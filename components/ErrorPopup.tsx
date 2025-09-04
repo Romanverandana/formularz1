@@ -1,7 +1,27 @@
-// /components/ErrorPopup.tsx
 'use client';
-import { motion, AnimatePresence } from 'framer-motion';
-import styles from './ErrorPopup.module.css';
 import { useEffect } from 'react';
+import styles from './ErrorPopup.module.css';
 
-export default function ErrorPopup({ message, onClose }: { message: string; onClose: () => void; }) { /* ... kod ... */ }
+interface Props {
+  message: string;
+  onClose: () => void;
+}
+
+export default function ErrorPopup({ message, onClose }: Props) {
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onEsc);
+    return () => window.removeEventListener('keydown', onEsc);
+  }, [onClose]);
+
+  if (!message) return null;
+
+  return (
+    <div className={styles.backdrop} role="dialog" aria-live="assertive">
+      <div className={styles.card}>
+        <p className={styles.text}>{message}</p>
+        <button type="button" className={styles.closeBtn} onClick={onClose}>Zamknij</button>
+      </div>
+    </div>
+  );
+}

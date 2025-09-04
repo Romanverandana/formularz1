@@ -1,27 +1,25 @@
-// app/api/submit/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+// Możesz tu użyć Zod do walidacji po stronie serwera, co jest dobrą praktyką
+// import { FormValuesSchema } from '@/lib/kg/schemas';
 
-import { NextResponse } from 'next/server';
-
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
-    
-    const data: { [key: string]: any } = {};
-    for (const [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-    
-    const files = formData.getAll('files');
+    const body = await req.json();
 
-    console.log("Odebrane dane formularza:", data);
-    console.log(`Odebrano ${files.length} plików.`);
+    // Tutaj możesz dodać walidację serwerową
+    // const validationResult = FormValuesSchema.safeParse(body);
+    // if (!validationResult.success) {
+    //   return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+    // }
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Tutaj Twoja logika (HubSpot/DB/Neo4j)
+    console.log("Otrzymano dane w API:", body);
 
-    return NextResponse.json({ message: "Dziękujemy! Otrzymaliśmy Twoje zapytanie." }, { status: 200 });
+    // Zwróć sukces
+    return NextResponse.json({ message: 'Success' }, { status: 200 });
 
   } catch (error) {
-    console.error("Błąd po stronie serwera:", error);
-    return NextResponse.json({ message: "Wystąpił błąd podczas przetwarzania zapytania." }, { status: 500 });
+    console.error('Błąd w API:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

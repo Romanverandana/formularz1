@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prepare": "husky",
+    "test": "echo \"(no tests)\" && exit 0"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
