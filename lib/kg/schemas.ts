@@ -1,31 +1,19 @@
-// /lib/kg/schemas.ts
 import { z } from 'zod';
 
+// Definicja schematu walidacji Zod
 export const FormValuesSchema = z.object({
-  person: z.object({
-    givenName: z.string().min(2, "Imię jest wymagane"),
-    email: z.string().email("Nieprawidłowy adres email"),
-    tel: z.string().optional(),
-  }),
-  productId: z.enum(['home-extension', 'cieply', 'zimny', 'pergola', 'zadaszenie'], {
-    errorMap: () => ({ message: "Proszę wybrać typ konstrukcji" }),
-  }),
-  location: z.object({
-    postalCode: z.string().regex(/^\d{2}-\d{3}$/, "Format kodu pocztowego to 00-000"),
-    locality: z.string().optional(),
-  }),
-  timePref: z.object({
-    start: z.date().optional(),
-  }).optional(),
-  consent: z.object({
-    marketing: z.literal(true, { errorMap: () => ({ message: "Zgoda jest wymagana" }) }),
-  }),
+  /* TUTAJ WKLEJ SWOJE POLA Z WALIDACJĄ, KTÓRE JUŻ MASZ, NP:
+
+    firstName: z.string().min(2, "Imię musi mieć co najmniej 2 znaki."),
+    email: z.string().email("Nieprawidłowy adres email."),
+    phoneNumber: z.string().optional(),
+    // ... i tak dalej dla wszystkich Twoich pól
+  */
 });
 
-export const IngestPayloadSchema = FormValuesSchema.extend({
-  projectId: z.string().uuid(),
-  ts: z.string().datetime(),
-  consent: FormValuesSchema.shape.consent.extend({
-      profiling: z.boolean(),
-  })
-});
+// Ta linijka tworzy i EKSPORTUJE typ TypeScript na podstawie powyższego schematu.
+// To właśnie jej brak lub brak słowa "export" powodował błąd.
+export type FormValues = z.infer<typeof FormValuesSchema>;
+
+// Możesz tu również wyeksportować inne potrzebne typy, jeśli istnieją, np.
+// export type IngestPayload = ...
