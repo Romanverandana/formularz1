@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Płaski schemat formularza – zgodny ze starszym Zod
+// Ostateczny, płaski schemat formularza – zgodny z Twoją wersją Zod
 export const FormValuesSchema = z.object({
   // Krok 1
   productId: z.string().min(1, "Proszę wybrać typ produktu."),
@@ -14,7 +14,7 @@ export const FormValuesSchema = z.object({
   phone: z.string().optional(),
   postalCode: z.string().min(5, { message: "Kod pocztowy musi mieć 5 znaków." }),
 
-  // Zamiast z.literal(true) (które potrafi bruździć w starszych configach):
+  // Używamy .refine(), co jest najbardziej uniwersalną i poprawną metodą
   consent: z.boolean().refine((v) => v === true, {
     message: "Zgoda jest wymagana.",
   }),
@@ -26,3 +26,4 @@ export type IngestPayload = FormValues & {
   id: string;
   ts: string;
 };
+

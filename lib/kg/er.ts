@@ -1,62 +1,47 @@
-// /lib/kg/er.ts
-import { IngestPayload } from './types';
-import { hashEmail, normalizePhoneNumber } from './utils';
+import { IngestPayload } from './schemas';
 import { runQuery } from './neo4j';
-import { v4 as uuidv4 } from 'uuid';
+import { hashEmail, normalizePhoneNumber } from './utils';
 
+// Ta funkcja została zaktualizowana, aby używać nowej, "płaskiej" struktury danych
 export async function resolveAndIngestEntities(payload: IngestPayload) {
-  const { projectId, ts, person, productId, location, timePref, consent } = payload;
-  const emailHash = hashEmail(person.email);
-  const telNorm = person.tel ? normalizePhoneNumber(person.tel) : null;
+  // Destrukturyzujemy dane zgodnie z nowym, płaskim schematem z schemas.ts
+  const { id, ts, name, email, phone, postalCode, productId, plannedDate, consent } = payload;
+  
+  const emailHash = hashEmail(email);
+  const telNorm = phone ? normalizePhoneNumber(phone) : null;
 
-  const params = {
-    projectId, ts, emailHash, telNorm,
-    givenName: person.givenName,
-    productId,
-    locality: location?.locality, postalCode: location.postalCode,
-    startDate: timePref?.start,
-    consentMarketing: consent.marketing, consentProfiling: consent.profiling,
-    consentId: uuidv4(),
-  };
+  const cypher = `
+    MERGE (p:Person {emailHash: $emailHash})
+    ON CREATE SET p.name = $name, p.email = $email, p.tel = $telNorm
+    ON MATCH SET p.name = $name, p.email = $email, p.tel = $telNorm
 
-  const query = `
-    MERGE (p:Person {id: $emailHash})
-    ON CREATE SET p.createdAt = datetime($ts), p.emailHash = $emailHash
-    ON MATCH SET p.lastSeen = datetime($ts)
-    WITH p
-    
-    FOREACH (_ IN CASE WHEN $telNorm IS NOT NULL THEN [1] ELSE [] END |
-      MERGE (ph:PhoneNumber {telNorm: $telNorm})
-      MERGE (p)-[:HAS_PHONE]->(ph)
-    )
+    MERGE (l:Location {postalCode: $postalCode})
 
-    WITH p
-    MERGE (proj:Project {id: $projectId})
-    ON CREATE SET proj.createdAt = datetime($ts)
-    MERGE (p)-[:INITIATED]->(proj)
-
-    MERGE (prod:Product {id: $productId})
-    MERGE (proj)-[:HAS_PRODUCT]->(prod)
-
-    WITH proj, p
-    WHERE $postalCode IS NOT NULL
-    MERGE (addr:Address {postalCode: $postalCode, locality: coalesce($locality, 'unknown')})
-    MERGE (proj)-[:AT_LOCATION]->(addr)
-
-    WITH proj, p
-    WHERE $startDate IS NOT NULL
-    MERGE (tp:TimePref {startDate: datetime($startDate)})
-    MERGE (proj)-[:HAS_TIME_PREF]->(tp)
-
-    WITH p
-    CREATE (c:Consent {
-      id: $consentId,
-      marketing: $consentMarketing,
-      profiling: $consentProfiling,
-      timestamp: datetime($ts),
-      status: 'active'
+    CREATE (s:Submission {
+      id: $id,
+      ts: datetime($ts),
+      productId: $productId,
+      plannedDate: CASE WHEN $plannedDate IS NOT NULL THEN date($plannedDate) ELSE null END,
+      consent: $consent
     })
-    MERGE (p)-[:GAVE_CONSENT]->(c)
+
+    CREATE (p)-[:MADE]->(s)
+    CREATE (s)-[:FOR_LOCATION]->(l)
   `;
-  await runQuery(query, params);
+
+  await runQuery(cypher, {
+    emailHash,
+    name,
+    email,
+    telNorm,
+    postalCode,
+    id,
+    ts,
+    productId,
+    // Przekazujemy datę jako string lub null
+    plannedDate: plannedDate instanceof Date ? plannedDate.toISOString().split('T')[0] : null,
+    consent
+  });
+
+  console.log(`Ingested submission ${id} for ${email}`);
 }
