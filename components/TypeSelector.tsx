@@ -97,7 +97,7 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
               variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: EASE_ORGANIC } } }}
             >
               <div className={styles.imageContainer}>
-                <motion.div className={styles.image} animate={!prefersReducedMotion ? dayBreathing : {}}>
+                <motion.div className={styles.image} initial={{ opacity: 1 }} animate={!prefersReducedMotion ? { opacity: 1, ...dayBreathing } : { opacity: 1 }}>
                   <Image src={tile.src} alt={tile.alt} fill sizes="(max-width: 768px) 100vw, 33vw" priority={index < 3} style={{ objectFit: 'cover' }}/>
                 </motion.div>
                 {tile.srcNight && (
