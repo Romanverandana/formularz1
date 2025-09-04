@@ -248,3 +248,6 @@
 
 @media (max-width: 768px) { .formGrid { grid-template-columns: 1fr; gap: 2rem; } }
 @media (max-width: 640px) { .container { padding: 2rem 1rem; } .formWrapper { border-radius: 0; border: none; } .form { padding: 2rem 1.5rem; } .header { padding: 3rem 1.5rem 2rem; } .title { font-size: 2rem; } }
+.fullWidthWrapper {
+  grid-column: 1 / -1;
+}

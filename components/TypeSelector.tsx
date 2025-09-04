@@ -67,7 +67,7 @@ export default function TypeSelector({ tiles, selectedValue, onSelect, error }: 
   return (
     <div>
       <motion.section 
-        className={styles.container} 
+        className={clsx(styles.container, tiles.length === 5 && styles.containerFiveCols)}
         role="radiogroup" 
         aria-label="Wybierz typ konstrukcji"
         onKeyDown={onGroupKeyDown}

@@ -1,26 +1,29 @@
 import { z } from 'zod';
 
 export const FormValuesSchema = z.object({
-  // --- PRZYKŁADOWE POLA - ZMIEŃ JE ZGODNIE Z TWOIM FORMULARZEM ---
+  // --- UPEWNIJ SIĘ, ŻE TE POLA SĄ ZGODNE Z TWOIM FORMULARZEM ---
+  // Dodajemy pole `productId` wymagane w kroku 1
+  productId: z.string({
+    required_error: "Proszę wybrać typ produktu.",
+  }).min(1, "Proszę wybrać typ produktu."),
   
   name: z.string().min(2, { message: "Imię musi mieć co najmniej 2 znaki." }),
   email: z.string().email({ message: "Proszę podać poprawny adres email." }),
-  phone: z.string().optional(), // Opcjonalny numer telefonu
+  phone: z.string().optional(),
   message: z.string().min(10, { message: "Wiadomość musi mieć co najmniej 10 znaków." }),
   
-  // To jest obiekt zgód, który wspólnie naprawialiśmy
+  // ***** POCZĄTEK POPRAWKI *****
+  // Zmieniamy zgodę na wymaganą
   consent: z.object({
-    marketing: z.boolean().optional(),
-  }).optional(),
+    marketing: z.boolean().refine(val => val === true, {
+      message: "Zgoda jest wymagana, aby kontynuować.",
+    }),
+  }),
+  // ***** KONIEC POPRAWKI *****
 });
 
-// Ten typ jest już poprawnie wyeksportowany
 export type FormValues = z.infer<typeof FormValuesSchema>;
 
-
-// ***** NOWO DODANY FRAGMENT *****
-// Typ `IngestPayload` rozszerza `FormValues` o pola,
-// które są dodawane po stronie serwera (np. id i timestamp).
 export type IngestPayload = FormValues & {
   id: string;
   ts: string;

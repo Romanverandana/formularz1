@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { v4 as uuidv4 } from 'uuid';
 import "react-phone-number-input/style.css";
 import styles from "./page.module.css";
 import { useForm, FormProvider, Controller, FieldErrors } from "react-hook-form";
@@ -28,7 +27,7 @@ const tilesData: Tile[] = [
     { value: "pergola", title: "Pergola Bioclimatic", desc: "Odkryj nowoczesny sposób na kontrolę nad słońcem, wiatrem i deszczem. Inteligentne rozwiązanie dla Twojego tarasu.", src: "/images/forms/pergola-bioclimatic-day.webp", alt: "Pergola Bioclimatic - widok dzienny", srcNight: "/images/forms/pergola-bioclimatic-night.webp", altNight: "Pergola Bioclimatic - widok nocny, elegancki" },
     { value: "zadaszenie", title: "Nie wiem", desc: "Nie masz pewności? Zaufaj naszym ekspertom, którzy pomogą Ci zaprojektować idealną przestrzeń.", src: "/images/forms/help-me.webp", alt: "Znak zapytania - pomoc w wyborze", srcNight: "/images/forms/help-me.webp", altNight: "Znak zapytania - pomoc w wyborze" },
 ];
-const contactFields = [ { id: 'givenName', label: 'Imię i nazwisko', placeholder: 'Jan Kowalski' }, { id: 'email', label: 'Email', placeholder: 'jan@example.com' }, ];
+const contactFields = [ { id: 'givenName', label: 'Imię', placeholder: 'Jan' }, { id: 'email', label: 'Email', placeholder: 'jan@example.com' }, ];
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -65,18 +64,27 @@ export default function Home() {
             const nestedKey = Object.keys(formErrors[firstErrorKey]!)[0];
             fieldNameToFocus = `${firstErrorKey}.${nestedKey}`;
         }
-        const el = document.querySelector(`[name="${fieldNameToFocus}"]`) as HTMLElement;
+        
+        const byName = document.querySelector<HTMLElement>(`[name="${fieldNameToFocus}"]`);
+        const byId = document.getElementById(fieldNameToFocus.split('.').pop()!);
+        const el = byName ?? (byId as HTMLElement | null);
+
         if (el) {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.focus({ preventScroll: true });
+            el.focus?.({ preventScroll: true });
         }
     }, 100);
   };
 
   const onSubmit = async (data: FormValues) => {
+    const startISO =
+      data.timePref?.start instanceof Date
+        ? data.timePref.start.toISOString()
+        : (data.timePref?.start ?? null);
+
     const payload: Omit<IngestPayload, 'projectId' | 'ts'> = {
       ...data,
-      timePref: { start: data.timePref?.start?.toISOString() },
+      timePref: { start: startISO },
       consent: { ...data.consent, profiling: data.consent.marketing },
     };
     try {
@@ -110,7 +118,14 @@ export default function Home() {
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit, onError)} className={styles.form} noValidate>
               
-              {currentStep === 1 && ( <TypeSelector tiles={tilesData} selectedValue={getValues("productId")} onSelect={v => setValue("productId", v, { shouldValidate: true })} error={errors.productId?.message} /> )}
+              {currentStep === 1 && (
+                <TypeSelector 
+                  tiles={tilesData} 
+                  selectedValue={getValues("productId")} 
+                  onSelect={v => setValue("productId", v, { shouldValidate: true })} 
+                  error={errors.productId?.message} 
+                />
+              )}
               
               {currentStep === 2 && ( 
                 <section>
